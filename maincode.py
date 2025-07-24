@@ -128,7 +128,10 @@ def get_roulette_color(number):
 
 
 def on_start():
-    global roulette_final_color, roulette_number, player_money
+    global roulette_final_color, roulette_number, player_money, player_bet_choice
+    
+    # CAPTURE THE BET CHOICE HERE before anything else
+    player_bet_choice = bet_color_choice.get()
     
     # Get quantum random number
     roulette_number = quantum_random_number(6)
@@ -168,15 +171,15 @@ class DisplayScreen(tk.Toplevel):
         self.geometry("600x450")
         self.configure(bg="#ffffff")
 
-        # NEW: Color choice display (radio buttons)
-        color_label = tk.Label(self, text="Your bet:", font=("Arial", 16), bg="#ffffff")
+        # Show what the player actually bet (not editable radio buttons)
+        color_label = tk.Label(self, text="Your bet was:", font=("Arial", 16), bg="#ffffff")
         color_label.pack()
-        color_frame = tk.Frame(self, bg="#ffffff")
-        color_frame.pack(pady=(5, 15))
-
-        tk.Radiobutton(color_frame, text="Red", variable=bet_color_choice, value="Red", font = 12, fg = "red", bg="#ffffff").pack(side="left", padx=10)
-        tk.Radiobutton(color_frame, text="Black", variable=bet_color_choice, value="Black", font = 12,fg = "black", bg="#ffffff").pack(side="left", padx=10)
-        tk.Radiobutton(color_frame, text="Zeroes", variable=bet_color_choice, value="Green", font = 12, fg="green", bg="#ffffff").pack(side="left", padx=10)
+        
+        # Show the actual bet choice (no radio buttons needed here)
+        bet_display = tk.Label(self, text=player_bet_choice, font=("Arial", 16, "bold"), 
+                              fg=player_bet_choice.lower() if player_bet_choice != "Green" else "green", 
+                              bg="#ffffff")
+        bet_display.pack(pady=(5, 15))
 
         #Determine if you won or not
         bet_str = betting_amount_var.get()
@@ -192,12 +195,12 @@ class DisplayScreen(tk.Toplevel):
             
         global player_money
         
-        # Calculate money changes first
-        if roulette_final_color == bet_color_choice.get():
+        # USE THE STORED BET CHOICE, NOT THE RADIO BUTTONS
+        if roulette_final_color == player_bet_choice:
             displayedToUser="WON!"
             result_color = "green"
             player_won = True
-            if bet_color_choice.get() == "Green":
+            if player_bet_choice == "Green":
                 winnings = bet_amount * 35
             else:
                 winnings = bet_amount * 2
@@ -207,6 +210,12 @@ class DisplayScreen(tk.Toplevel):
             result_color = "red"
             player_won = False
             player_money = player_money - bet_amount  # Just subtract the bet amount
+
+        # Show the actual roulette result
+        roulette_result_label = tk.Label(self, text=f"Roulette landed on: {roulette_number} ({roulette_final_color})", 
+                                        font=("Arial", 14), bg="#ffffff", 
+                                        fg=roulette_final_color.lower() if roulette_final_color != "Green" else "green")
+        roulette_result_label.pack(pady=10)
 
         # Top result label
         result_label = tk.Label(self, text=(("You have " + displayedToUser)), font=("Arial", 32, "bold"), bg="#ffffff", fg=result_color)
@@ -283,6 +292,7 @@ roulette_final_color = ""
 roulette_number = 0
 player_money = 0  # Track player's total money
 next_bet_amount = ""  # Store next bet amount
+player_bet_choice = ""  # Store the actual bet choice
 
 # Main window
 root = tk.Tk()
@@ -340,4 +350,4 @@ start_button.place(x=200, y=430, width=200, height=35)  # adjust x/y if needed
 if __name__ == "__main__":
     root.mainloop()
 #Non-Qiskit stuff coded by Laith Al-Wir (: + Claude AI (Saved me fr). Qiskit coded by Charmaine
-#Idk who'd be reading this, maybe someone in my group Charmaine, Vish, or Turki; maybe a professor; maybe a TA. Maybe a future student. Who knows
+#Idk who'd be reading this, maybe someone in my group Charmaine, Vish, or Turki; maybe a professor; maybe a TA. Maybe a future student. Who
