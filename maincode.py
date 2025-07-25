@@ -99,19 +99,17 @@ def quantum_random_number(num_bits=6):
         from qiskit.quantum_info import Statevector
         
         random_decimal = 39
+        random_decimal = 0
         while random_decimal < 1 or random_decimal > 38:
             qc = QuantumCircuit(num_bits)
             for i in range(num_bits):
                 qc.h(i)
-            # Get the statevector (superposition)
             state = Statevector.from_instruction(qc)
-            # Get probabilities for all basis states
             probs = state.probabilities_dict()
-            # Randomly sample one bitstring based on quantum probabilities
             bitstrings = list(probs.keys())
             chosen = random.choices(bitstrings, weights=probs.values())[0]
             random_decimal = int(chosen, 2)
-            return random_decimal
+        return random_decimal
     except ImportError:
         # Fallback to regular random if Qiskit is not available
         return random.randint(1, 38)
