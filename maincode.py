@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import PhotoImage
-from PIL import Image, ImageTk, ImageSequenc
+from PIL import Image, ImageTk, ImageSequence
+import random
 
 
 class LoadingScreen(tk.Toplevel):
@@ -111,7 +112,9 @@ def quantum_random_number(num_bits=6):
             chosen = random.choices(bitstrings, weights=probs.values())[0]
             random_decimal = int(chosen, 2)
             return random_decimal
-
+    except ImportError:
+        # Fallback to regular random if Qiskit is not available
+        return random.randint(1, 38)
 
 
 def get_roulette_color(number):
